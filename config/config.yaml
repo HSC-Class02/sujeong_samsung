@@ -1,0 +1,23 @@
+company:
+  name: "삼성전자"
+  corp_code: "00126380"
+  stock_code: "005930"
+  start_year: 2010
+  fs_div: "CFS"
+  currency: "KRW"
+  unit: "백만원"
+reports:
+  annual: "11011"
+  half_year: "11012"
+  quarterly_q1: "11013"
+  quarterly_q3: "11014"
+  quarterly: ["11013", "11012", "11014"]
+raw_fallback:
+  enabled: true
+  years: [2010, 2011, 2012, 2013, 2014]
+peers:
+  - {name: "SK하이닉스", ticker: "000660", note: "메모리/AI 반도체 중심"}
+  - {name: "삼성전기", ticker: "009150", note: "전자부품/반도체 패키지·부품"}
+  - {name: "LG전자", ticker: "066570", note: "전자제품/전장·가전"}
+  - {name: "LG이노텍", ticker: "011070", note: "전자부품/카메라·기판"}
+  - {name: "DB하이텍", ticker: "000990", note: "파운드리"}
