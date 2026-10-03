@@ -11,7 +11,7 @@ def base_rows():
     common = {
         "cost_of_sales": 600, "gross_profit": 400, "sga": 200,
         "pretax_income": 100, "interest_expense": 20, "income_tax": 20,
-        "depreciation_amortization": 50, "total_assets": 2000, "cash": 200,
+        "depreciation_amortization": 50, "ebitda": 250, "total_assets": 2000, "cash": 200,
         "receivables": 180, "inventory": 240, "current_assets": 700,
         "current_liabilities": 500, "payables": 160, "ppe": 800,
         "total_liabilities": 800, "interest_bearing_debt": 300,
@@ -28,7 +28,7 @@ def base_rows():
               controlling_net_income=270, cfo=780, capex=340)
     ann = dict(common, year=2025, period="annual", reprt_code="11011",
                revenue=4500, operating_income=900, net_income=400,
-               controlling_net_income=400, cfo=1100, capex=480)
+               controlling_net_income=400, cfo=1100, capex=480, ebitda=950)
     return pd.DataFrame([q1, h1, q3, ann])
 
 
