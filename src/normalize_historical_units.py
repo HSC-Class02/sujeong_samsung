@@ -31,8 +31,11 @@ def main() -> None:
 
     df = ratios(df)
     df.to_csv(csv, index=False, encoding="utf-8-sig")
-    payload = df.where(pd.notna(df), None).to_dict(orient="records")
-    (PROC / "samsung_financials.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    payload = df.astype(object).where(pd.notna(df), None).to_dict(orient="records")
+    (PROC / "samsung_financials.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, default=str, allow_nan=False),
+        encoding="utf-8",
+    )
     SITE.mkdir(parents=True, exist_ok=True)
     for name in ["samsung_financials.csv", "samsung_financials.json"]:
         (SITE / name).write_bytes((PROC / name).read_bytes())
