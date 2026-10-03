@@ -103,10 +103,13 @@ def clean(s: Any) -> str:
 
 def amount(row: dict[str, Any], flow: bool) -> float | None:
     keys = ("thstrm_add_amount", "thstrm_amount") if flow else ("thstrm_amount", "thstrm_add_amount")
+    currency = str(row.get("currency") or "KRW").upper()
     for k in keys:
         x = num(row.get(k))
         if x is not None:
-            return x
+            # OpenDART returns the reported amount in the filing currency (KRW for Samsung).
+            # The dashboard standard is million KRW, so convert KRW amounts before analysis.
+            return x / 1_000_000 if currency == "KRW" else x
     return None
 
 
