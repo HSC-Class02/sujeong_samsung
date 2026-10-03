@@ -31,13 +31,16 @@ jobs:
 
       - name: Run syntax checks
         run: |
-          python -m py_compile src/dart_agent.py src/dart_agent_v2.py
+          python -m py_compile src/dart_agent.py src/dart_agent_v2.py src/normalize_historical_units.py
           python tests/test_ratios.py
 
       - name: Collect and analyze DART data
         env:
           OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
         run: python src/dart_agent.py
+
+      - name: Normalize historical monetary units
+        run: python src/normalize_historical_units.py
 
       - name: Commit generated data
         run: |
