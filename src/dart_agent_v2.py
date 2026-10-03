@@ -262,8 +262,25 @@ def historical(year:int, kind:str, disclosures:list[dict[str,Any]]):
     return None,None,None
 
 
+def _json_ready(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {k: _json_ready(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_json_ready(v) for v in obj]
+    if isinstance(obj, (np.floating, float)):
+        return None if not np.isfinite(obj) else float(obj)
+    if isinstance(obj, np.integer):
+        return int(obj)
+    return obj
+
+
 def save(path:Path,obj:Any):
-    path.parent.mkdir(parents=True,exist_ok=True); path.write_text(json.dumps(obj,ensure_ascii=False,indent=2,default=str),encoding="utf-8")
+    path.parent.mkdir(parents=True,exist_ok=True)
+    payload = _json_ready(obj)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, default=str, allow_nan=False),
+        encoding="utf-8",
+    )
 
 
 def ratios(df:pd.DataFrame)->pd.DataFrame:
