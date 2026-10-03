@@ -18,28 +18,25 @@ def main() -> None:
     df = pd.read_csv(csv)
     money_fields = [c for c in ALL_FIELDS if c in df.columns]
     hist = df["year"].astype(int) < 2015
-    if not hist.any():
-        return
-
-    # OpenDART XBRL monetary facts can be stored in KRW while the structured
-    # financial API is presented in million KRW. Historical rows are scaled only
-    # when their magnitude strongly indicates raw KRW, leaving document-table
-    # values already expressed in million KRW unchanged.
     for idx in df.index[hist]:
-        scale = 1_000_000.0 if any(abs(float(df.at[idx, c])) >= 1e12 for c in money_fields if pd.notna(df.at[idx, c])) else 1.0
+        vals = [float(df.at[idx, c]) for c in money_fields if pd.notna(df.at[idx, c])]
+        scale = 1_000_000.0 if any(abs(x) >= 1e12 for x in vals) else 1.0
         if scale != 1.0:
             for c in money_fields:
                 if pd.notna(df.at[idx, c]):
                     df.at[idx, c] = float(df.at[idx, c]) / scale
 
+    if "operating_income" in df and "depreciation_amortization" in df:
+        df["ebitda"] = df["operating_income"] + df["depreciation_amortization"].abs()
+
     df = ratios(df)
     df.to_csv(csv, index=False, encoding="utf-8-sig")
-    payload = df.replace({pd.NA: None, float("inf"): None, float("-inf"): None}).where(pd.notna(df), None).to_dict(orient="records")
+    payload = df.where(pd.notna(df), None).to_dict(orient="records")
     (PROC / "samsung_financials.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
     SITE.mkdir(parents=True, exist_ok=True)
     for name in ["samsung_financials.csv", "samsung_financials.json"]:
         (SITE / name).write_bytes((PROC / name).read_bytes())
-    print("Historical unit normalization completed.")
+    print("Historical unit normalization and derived-metric recalculation completed.")
 
 if __name__ == "__main__":
     main()
