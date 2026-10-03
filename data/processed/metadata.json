@@ -1,0 +1,15 @@
+{
+  "company": {
+    "name": "삼성전자",
+    "corp_code": "00126380",
+    "stock_code": "005930",
+    "start_year": 2010,
+    "fs_div": "CFS",
+    "currency": "KRW",
+    "unit": "백만원"
+  },
+  "updated_at_utc": "2026-10-03T18:41:52.978426+00:00",
+  "structured_financial_data_from": 2015,
+  "historical_fallback": "2010-2014 disclosure + fnlttXbrl/document original file",
+  "rows": 77
+}
