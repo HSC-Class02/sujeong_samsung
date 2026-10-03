@@ -1,0 +1,52 @@
+name: Update Samsung financial data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "10 15 1 * *"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "data/**"
+      - "site/data/**"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run syntax checks
+        run: |
+          python -m py_compile src/dart_agent.py src/dart_agent_v2.py
+          python tests/test_ratios.py
+
+      - name: Collect and analyze DART data
+        env:
+          OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+        run: python src/dart_agent.py
+
+      - name: Commit generated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data site/data
+          if git diff --cached --quiet; then
+            echo "No data changes to commit."
+          else
+            git commit -m "chore: update Samsung DART financial data"
+            git push
+          fi
